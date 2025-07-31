@@ -18,4 +18,3 @@ keystore.properties
 # Keystore files
 *.jks
 *.keystore
-keystore.properties
