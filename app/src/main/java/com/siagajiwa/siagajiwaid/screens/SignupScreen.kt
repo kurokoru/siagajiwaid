@@ -27,18 +27,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+//import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+//import androidx.navigation.compose.rememberNavController
 import com.siagajiwa.siagajiwaid.R
-import com.siagajiwa.siagajiwaid.components.BottomSignupTextComponent
-import com.siagajiwa.siagajiwaid.components.HeadingTextComponent
-import com.siagajiwa.siagajiwaid.components.ImageComponent
-import com.siagajiwa.siagajiwaid.components.MyButton
-import com.siagajiwa.siagajiwaid.components.MyTextField
-import com.siagajiwa.siagajiwaid.components.SignupTermsAndPrivacyText
 import com.siagajiwa.siagajiwaid.ui.theme.LeftStart
 import com.siagajiwa.siagajiwaid.ui.theme.PurpleDark
 import com.siagajiwa.siagajiwaid.ui.theme.White
@@ -149,8 +143,8 @@ fun SignupScreen(navController: NavHostController) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SignUpScreenPreview() {
-    SignupScreen(navController = rememberNavController())
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun SignUpScreenPreview() {
+//    SignupScreen(navController = rememberNavController())
+//}

@@ -7,6 +7,21 @@ plugins {
 android {
     namespace = "com.siagajiwa.siagajiwaid"
     compileSdk = 36
+    signingConfigs {
+        create("release") {
+            if (keystorePropertiesFile.exists()) {
+                storeFile = file(keystoreProperties.getProperty("storeFile")) // Or direct path: file("../my-release-key.jks")
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            } else {
+                // Fallback or error if properties file not found,
+                // useful for CI environments where you might use environment variables instead.
+                // For local builds, you might want to throw an error if it's missing.
+                println("Keystore properties not found. Release builds will not be signed.")
+            }
+        }
+    }
 
     defaultConfig {
         applicationId = "com.siagajiwa.siagajiwaid"
@@ -25,6 +40,14 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        getByName("release") {
+            isMinifyEnabled = true // Or false, depending on your needs
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("release") // Apply the signing config
         }
     }
     compileOptions {

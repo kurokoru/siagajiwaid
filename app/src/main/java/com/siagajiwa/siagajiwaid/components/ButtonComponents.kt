@@ -53,7 +53,7 @@ fun SignInBottom(navController: NavHostController) {
                 text = "Daftar",
                 modifier = Modifier.padding(top = 10.dp, start = 10.dp)
                     .clickable {
-                        navController.navigate("SignUp")
+                        navController.navigate("SignupScreen")
                     },
                 color = PurpleDark,
                 fontSize = 16.sp
@@ -118,7 +118,7 @@ fun SignUpBottom(navController: NavHostController) {
                 text = "Daftar",
                 modifier = Modifier.padding(top = 10.dp, start = 10.dp)
                     .clickable {
-                        navController.navigate("SignIn")
+                        navController.navigate("LoginScreen")
                     },
                 color = PurpleDark,
                 fontSize = 16.sp
