@@ -55,5 +55,20 @@ fun Navigation() {
         ) {
             QuizScreen(navController)
         }
+        composable(
+            route = "ActivityHistoryScreen"
+        ) {
+            ActivityHistoryScreen(navController)
+        }
+        composable(
+            route = "QuizResultScreen"
+        ) {
+            QuizResultScreen(navController)
+        }
+        composable(
+            route = "StressTestResultScreen"
+        ) {
+            StressTestResultScreen(navController)
+        }
     }
 }

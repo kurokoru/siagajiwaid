@@ -8,6 +8,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
+import androidx.navigation.NavHostController
 import com.siagajiwa.siagajiwaid.R
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,9 +20,10 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun CustomBottomNavigation(
-    selectedIndex: Int, 
+    selectedIndex: Int,
     onItemSelected: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavHostController? = null
 ) {
     Surface(
         color = Color.White,
@@ -45,24 +47,20 @@ fun CustomBottomNavigation(
                 )
 
                 NavigationItem(
-                    icon = R.drawable.search,
-                    label = "Search",
-                    isSelected = selectedIndex == 1,
-                    onClick = { onItemSelected(1) }
-                )
-
-                NavigationItem(
                     icon = R.drawable.appointment,
                     label = "Riwayat",
-                    isSelected = selectedIndex == 2,
-                    onClick = { onItemSelected(2) }
+                    isSelected = selectedIndex == 1,
+                    onClick = {
+                        onItemSelected(1)
+                        navController?.navigate("ActivityHistoryScreen")
+                    }
                 )
 
                 NavigationItem(
                     icon = R.drawable.settings,
                     label = "Settings",
-                    isSelected = selectedIndex == 3,
-                    onClick = { onItemSelected(3) }
+                    isSelected = selectedIndex == 2,
+                    onClick = { onItemSelected(2) }
                 )
             }
 
@@ -136,6 +134,6 @@ fun NavigationItem(
 @Preview(showBackground = true)
 @Composable
 fun CustomBottomNavigationPreview() {
-    var selectedIndex by remember { mutableIntStateOf(2) }
+    var selectedIndex by remember { mutableIntStateOf(1) }
     CustomBottomNavigation(selectedIndex = selectedIndex, onItemSelected = { index -> selectedIndex = index })
 }
