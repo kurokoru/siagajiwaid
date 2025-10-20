@@ -47,7 +47,7 @@ fun InputText(labelVal: String, height: Dp = 58.dp) {
             .fillMaxWidth()
             .height(height),
         label = {
-            Text(text = labelVal, fontSize = 12.sp)
+            Text(text = labelVal, fontSize = 12.sp,  lineHeight = 24.sp )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = BrandColor,

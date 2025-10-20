@@ -359,13 +359,13 @@ fun StressLevelCard(
                             ) {
                                 Text(
                                     text = "Pengetahuan",
-                                    fontSize = 20.sp,
+                                    fontSize = 18.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = Color.Black
                                 )
                                 Text(
                                     text = "Perawatan Pasien",
-                                    fontSize = 20.sp,
+                                    fontSize = 18.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = Color.Black
                                 )
@@ -453,8 +453,8 @@ fun StessLevelCardPreview() {
     // For the purpose of this preview, we can pass null if the composable handles it gracefully,
     // or create a simple NavController instance if needed (e.g., using rememberNavController()).
     // However, since the navController is not used in the HomeScreen's logic, passing a dummy is fine.
-//    HomeScreen(navController = NavHostController(androidx.compose.ui.platform.LocalContext.current))
-    StressLevelCard(selectedTab = 1, onTabSelected = {}, navController = NavHostController(androidx.compose.ui.platform.LocalContext.current))
+    HomeScreen(navController = NavHostController(androidx.compose.ui.platform.LocalContext.current))
+//    StressLevelCard(selectedTab = 1, onTabSelected = {}, navController = NavHostController(androidx.compose.ui.platform.LocalContext.current))
 }
 
 @Composable
