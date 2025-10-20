@@ -125,7 +125,7 @@ fun HomeScreen(navController: NavHostController) {
 
                     item {
                         // Category Grid
-                        CategoryGrid()
+                        CategoryGrid(navController)
                     }
 
                     item {
@@ -458,7 +458,7 @@ fun StessLevelCardPreview() {
 }
 
 @Composable
-fun CategoryGrid() {
+fun CategoryGrid(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -471,13 +471,15 @@ fun CategoryGrid() {
         ) {
             CategoryCard(
                 title = "Perawatan\nPasien",
-                icon = R.drawable.patient, // Will be replaced with correct icon
-                modifier = Modifier.weight(1f)
+                icon = R.drawable.patient,
+                modifier = Modifier.weight(1f),
+                onClick = { navController.navigate("PatientCareScreen") }
             )
             CategoryCard(
                 title = "Wawasan\nSkizofrenia",
-                icon = R.drawable.learn, // Will be replaced with correct icon
-                modifier = Modifier.weight(1f)
+                icon = R.drawable.learn,
+                modifier = Modifier.weight(1f),
+                onClick = { navController.navigate("SchizophreniaInsightScreen") }
             )
         }
 
@@ -491,12 +493,14 @@ fun CategoryGrid() {
             CategoryCard(
                 title = "Manajemen\nStress",
                 icon = R.drawable.worker, // Will be replaced with correct icon
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                onClick = { navController.navigate("StressManagementMaterialScreen") }
             )
             CategoryCard(
                 title = "Video\nTutorial",
                 icon = R.drawable.video, // Will be replaced with correct icon
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                onClick = { /* Handle click */ }
             )
         }
     }
@@ -506,7 +510,8 @@ fun CategoryGrid() {
 fun CategoryCard(
     title: String,
     icon: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
     var isPressed by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
@@ -525,7 +530,7 @@ fun CategoryCard(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(color = SecondaryPurple),
-                onClick = { /* Handle category click */ }
+                onClick = onClick
             ),
         shape = RoundedCornerShape(15.dp),
         colors = CardDefaults.cardColors(containerColor = White),

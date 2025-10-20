@@ -70,5 +70,20 @@ fun Navigation() {
         ) {
             StressTestResultScreen(navController)
         }
+        composable(
+            route = "StressManagementMaterialScreen"
+        ) {
+            StressManagementMaterialScreen(navController)
+        }
+        composable(
+            route = "PatientCareScreen"
+        ) {
+            PatientCareScreen(navController)
+        }
+        composable(
+            route = "SchizophreniaInsightScreen"
+        ) {
+            SchizophreniaInsightScreen(navController)
+        }
     }
 }

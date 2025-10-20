@@ -43,7 +43,10 @@ fun CustomBottomNavigation(
                     icon = R.drawable.home,
                     label = "Home",
                     isSelected = selectedIndex == 0,
-                    onClick = { onItemSelected(0) }
+                    onClick = {
+                        onItemSelected(0)
+                        navController?.navigate("HomeScreen")
+                    }
                 )
 
                 NavigationItem(
