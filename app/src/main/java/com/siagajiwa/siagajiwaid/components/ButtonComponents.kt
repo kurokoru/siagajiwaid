@@ -37,7 +37,7 @@ import com.siagajiwa.siagajiwaid.ui.theme.White
 @Composable
 fun SignInBottom(navController: NavHostController) {
     Column (){
-        DefaultButton(labelVal = "Sign in", navController = navController)
+        DefaultButton(labelVal = "Sign In", navController = navController)
         Spacer(modifier = Modifier.height(10.dp))
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -47,7 +47,7 @@ fun SignInBottom(navController: NavHostController) {
                 text = "Belum Memiliki Akun?",
                 modifier = Modifier.padding(top = 10.dp, start = 85.dp),
                 color = DarkLight,
-                fontSize = 16.sp
+                fontSize = 12.sp
             )
             Text(
                 text = "Daftar",
@@ -56,7 +56,7 @@ fun SignInBottom(navController: NavHostController) {
                         navController.navigate("SignupScreen")
                     },
                 color = PurpleDark,
-                fontSize = 16.sp
+                fontSize = 14.sp
             )
 
         }
@@ -67,26 +67,26 @@ fun SignInBottom(navController: NavHostController) {
 @Composable
 fun DefaultButton(labelVal: String, navController: NavHostController) {
     Button(
-        onClick = { /*TODO*/ },
+        onClick = {
+            when (labelVal) {
+                "Sign In" -> navController.navigate("HomeScreen")
+                "Submit" -> navController.navigate("ResetPassword")
+            }
+        },
         colors = ButtonDefaults.buttonColors(
             containerColor = PurpleDark
         ),
         shape = RoundedCornerShape(25.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
+            .height(80.dp)
             .padding(top = 40.dp)
 
     ) {
         Text(
             text = labelVal,
             color = White,
-            fontSize = 24.sp,
-            modifier = Modifier.clickable {
-                if (labelVal == "Submit") {
-                    navController.navigate("ResetPassword")
-                }
-            }
+            fontSize = 20.sp
         )
     }
 }

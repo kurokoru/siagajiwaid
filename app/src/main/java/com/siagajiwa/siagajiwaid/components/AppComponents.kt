@@ -69,7 +69,7 @@ fun HeadingTextComponent(heading: String) {
     Text(
         text = heading,
         modifier = Modifier.fillMaxWidth(),
-        fontSize = 28.sp,
+        fontSize = 24.sp,
         color = PurpleDark,
         fontWeight = FontWeight.Bold
     )
@@ -81,14 +81,14 @@ fun ForgotPasswordHeadingTextComponent(action: String) {
         Text(
             text = action,
             modifier = Modifier.fillMaxWidth(),
-            fontSize = 39.sp,
+            fontSize = 24.sp,
             color = Primary,
             fontWeight = FontWeight.Bold
         )
         Text(
             text = "Password?",
             modifier = Modifier.fillMaxWidth().offset(y = (-18).dp),
-            fontSize = 39.sp,
+            fontSize = 24.sp,
             color = Primary,
             fontWeight = FontWeight.Bold
         )
@@ -120,7 +120,7 @@ fun MyTextField(labelVal: String, icon: Int) {
             focusedLeadingIconColor = BrandColor,
             unfocusedLeadingIconColor = Tertirary
         ),
-        shape = MaterialTheme.shapes.small,
+        shape = MaterialTheme.shapes.large,
         placeholder = {
             Text(text = labelVal, color = Tertirary)
         },
@@ -152,7 +152,7 @@ fun PasswordInputComponent(labelVal: String) {
         onValueChange = {
             password = it
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().height(48.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = BrandColor,
             unfocusedBorderColor = BorderColor,
@@ -160,7 +160,7 @@ fun PasswordInputComponent(labelVal: String) {
         ),
         shape = MaterialTheme.shapes.large,
         placeholder = {
-            Text(text = labelVal, color = Tertirary)
+            Text(text = labelVal, color = Tertirary, fontSize = 12.sp)
         },
         trailingIcon = {
             val description = if (isShowPassword) "Show Password" else "Hide Password"

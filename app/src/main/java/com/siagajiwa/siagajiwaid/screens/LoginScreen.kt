@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,7 +44,7 @@ fun RoundedLayout(navController: NavHostController){
     Surface(
         modifier = Modifier.fillMaxSize(),//.padding(top = 10.dp),
         color = White,
-        shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
+        shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
     ) {
         Column(
             modifier = Modifier
@@ -53,20 +54,19 @@ fun RoundedLayout(navController: NavHostController){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(
-                modifier = Modifier.padding(top=10.dp)
+                modifier = Modifier.padding(top=5.dp)
             ){
                 HeadingTextComponent(heading = "Selamat Datang")
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = "Halo, Silahkan masuk untuk melanjutkan",
                     color = Color.Gray,
-                    fontSize = 16.sp
+                    fontSize = 12.sp
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
             ImageCenter(image = R.drawable.locked)
-            Spacer(modifier = Modifier.height(10.dp))
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(30.dp))
             Column {
                 InputText(labelVal = "Email/No Handphone")
                 Spacer(modifier = Modifier.height(15.dp))
@@ -127,8 +127,8 @@ fun LoginScreen(navController: NavHostController) {
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun LoginScreenPreview() {
-//    LoginScreen(navController = rememberNavController())
-//}
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    LoginScreen(navController = rememberNavController())
+}

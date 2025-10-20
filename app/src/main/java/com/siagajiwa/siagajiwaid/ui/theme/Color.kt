@@ -26,3 +26,11 @@ val PurpleDark = Color(color = 0xFF3629B7)
 // Netral
 val DarkLight = Color(color = 0xFF343434)
 val White = Color(color = 0xFFFFFFFF)
+
+// Semantic Colors
+val SemanticRed = Color(color = 0xFFFF4267)
+val SemanticYellow = Color(color = 0xFFFFAF2A)
+
+// Additional Colors
+val TextGray = Color(color = 0xFF979797)
+val SecondaryPurple = Color(color = 0xFF5655B9)

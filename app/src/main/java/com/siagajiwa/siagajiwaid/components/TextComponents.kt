@@ -1,6 +1,7 @@
 package com.siagajiwa.siagajiwaid.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -18,13 +19,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.siagajiwa.siagajiwaid.ui.theme.BorderColor
 import com.siagajiwa.siagajiwaid.ui.theme.BrandColor
 import com.siagajiwa.siagajiwaid.ui.theme.Tertirary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InputText(labelVal: String) {
+fun InputText(labelVal: String, height: Dp = 58.dp) {
     var textVal by remember {
         mutableStateOf("")
     }
@@ -39,7 +43,12 @@ fun InputText(labelVal: String) {
         onValueChange = {
             textVal = it
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(height),
+        label = {
+            Text(text = labelVal, fontSize = 12.sp)
+        },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = BrandColor,
             unfocusedBorderColor = BorderColor,
@@ -49,7 +58,7 @@ fun InputText(labelVal: String) {
         ),
         shape = MaterialTheme.shapes.large,
         placeholder = {
-            Text(text = labelVal, color = Tertirary)
+            Text(text = labelVal, color = Tertirary, fontSize = 12.sp)
         },
         keyboardOptions = KeyboardOptions(
             keyboardType = typeOfKeyboard,

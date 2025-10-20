@@ -8,6 +8,9 @@ import com.siagajiwa.siagajiwaid.components.ForgotPasswordScreen
 import com.siagajiwa.siagajiwaid.components.LoginScreen
 import com.siagajiwa.siagajiwaid.components.ResetPasswordScreen
 import com.siagajiwa.siagajiwaid.components.SignupScreen
+import com.siagajiwa.siagajiwaid.screens.HomeScreen
+import com.siagajiwa.siagajiwaid.screens.QuestionnaireScreen
+import com.siagajiwa.siagajiwaid.screens.QuizScreen
 
 @Composable
 fun Navigation() {
@@ -36,6 +39,21 @@ fun Navigation() {
             route = "SignupScreen"
         ) {
             SignupScreen(navController)
+        }
+        composable(
+            route = "HomeScreen"
+        ) {
+            HomeScreen(navController)
+        }
+        composable(
+            route = "PatientQuiz"
+        ) {
+            QuestionnaireScreen(navController)
+        }
+        composable(
+            route = "QuizScreen"
+        ) {
+            QuizScreen(navController)
         }
     }
 }

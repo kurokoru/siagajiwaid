@@ -17,7 +17,7 @@ fun ForgotPassword(navController: NavHostController) {
         text = "Forgot Password?",
         color = DarkLight,
         fontWeight = FontWeight.Bold,
-        fontSize = 16.sp,
+        fontSize = 12.sp,
         modifier = Modifier.clickable {
             navController.navigate("ForgotPassword")
         }

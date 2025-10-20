@@ -15,6 +15,6 @@ fun ImageCenter(image: Int) {
         contentDescription = null,
         modifier = Modifier
             .fillMaxWidth()
-            .size(150.dp)
+            .size(180.dp)
     )
 }
