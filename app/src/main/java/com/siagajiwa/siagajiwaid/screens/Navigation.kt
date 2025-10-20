@@ -1,9 +1,11 @@
 package com.siagajiwa.siagajiwaid.screens
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.siagajiwa.siagajiwaid.components.ForgotPasswordScreen
 import com.siagajiwa.siagajiwaid.components.LoginScreen
 import com.siagajiwa.siagajiwaid.components.ResetPasswordScreen
@@ -84,6 +86,26 @@ fun Navigation() {
             route = "SchizophreniaInsightScreen"
         ) {
             SchizophreniaInsightScreen(navController)
+        }
+        composable(
+            route = "VideoScreen"
+        ) {
+            VideoScreen(navController)
+        }
+        composable(
+            route = "VideoPlayerScreen/{videoUrl}/{videoTitle}",
+            arguments = listOf(
+                navArgument("videoUrl") { type = NavType.StringType },
+                navArgument("videoTitle") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val videoUrl = backStackEntry.arguments?.getString("videoUrl") ?: ""
+            val videoTitle = backStackEntry.arguments?.getString("videoTitle") ?: ""
+            VideoPlayerScreen(
+                navController = navController,
+                videoUrl = videoUrl,
+                videoTitle = videoTitle
+            )
         }
     }
 }

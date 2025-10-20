@@ -61,7 +61,7 @@ fun QuizScreen(navController: NavHostController) {
             modifier = Modifier.fillMaxSize()
         ) {
             // Status Bar Spacer
-            Spacer(modifier = Modifier.height(44.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Navigation Bar
             QuizNavigationBar(

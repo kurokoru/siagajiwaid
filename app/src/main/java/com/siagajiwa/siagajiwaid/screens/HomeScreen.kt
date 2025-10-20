@@ -48,7 +48,7 @@ fun HomeScreen(navController: NavHostController) {
             modifier = Modifier.fillMaxSize()
         ) {
             // Status Bar Space
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Header Section with Purple Background
             Column(
@@ -60,10 +60,10 @@ fun HomeScreen(navController: NavHostController) {
                 Text(
                     text = "Hi, Melissa Jenner",
                     color = White,
-                    fontSize = 16.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Medium
                 )
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
             // White Content Section with rounded top corners
@@ -498,9 +498,9 @@ fun CategoryGrid(navController: NavHostController) {
             )
             CategoryCard(
                 title = "Video\nTutorial",
-                icon = R.drawable.video, // Will be replaced with correct icon
+                icon = R.drawable.video,
                 modifier = Modifier.weight(1f),
-                onClick = { /* Handle click */ }
+                onClick = { navController.navigate("VideoScreen") }
             )
         }
     }

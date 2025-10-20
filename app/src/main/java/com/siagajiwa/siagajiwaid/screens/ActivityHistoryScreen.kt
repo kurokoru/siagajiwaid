@@ -51,11 +51,19 @@ fun ActivityHistoryScreen(navController: NavHostController) {
     val stressHistory = listOf(
         StressHistoryItem("30/10/2019", "08:30", "Tinggi", Color(0xFFFF4267), R.drawable.tinggi),
         StressHistoryItem("30/10/2019", "04:27", "Rendah", Color(0xFF27AE60), R.drawable.rendah),
-        StressHistoryItem("20/10/2019", "18:01", "Sedang", Color(0xFFFFAF2A), R.drawable.sedang)
+        StressHistoryItem("20/10/2019", "18:01", "Sedang", Color(0xFFFFAF2A), R.drawable.sedang),
+        StressHistoryItem("20/10/2019", "18:01", "Sedang", Color(0xFFFFAF2A), R.drawable.sedang),
+        StressHistoryItem("20/10/2019", "18:01", "Sedang", Color(0xFFFFAF2A), R.drawable.sedang),
+        StressHistoryItem("20/10/2019", "18:01", "Sedang", Color(0xFFFFAF2A), R.drawable.sedang),
     )
 
     // Sample data for quiz history
     val quizHistory = listOf(
+        QuizHistoryItem("30/10/2019", "08:30", "Cukup", 75, PurpleDark),
+        QuizHistoryItem("30/10/2019", "08:30", "Cukup", 75, PurpleDark),
+        QuizHistoryItem("30/10/2019", "08:30", "Cukup", 75, PurpleDark),
+        QuizHistoryItem("30/10/2019", "08:30", "Cukup", 75, PurpleDark),
+        QuizHistoryItem("30/10/2019", "08:30", "Cukup", 75, PurpleDark),
         QuizHistoryItem("30/10/2019", "08:30", "Cukup", 75, PurpleDark),
         QuizHistoryItem("30/10/2019", "04:27", "Kurang", 25, PurpleDark),
         QuizHistoryItem("20/10/2019", "18:01", "Kurang", 50, PurpleDark)
@@ -70,7 +78,7 @@ fun ActivityHistoryScreen(navController: NavHostController) {
             modifier = Modifier.fillMaxSize()
         ) {
             // Status Bar Spacer
-            Spacer(modifier = Modifier.height(44.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Navigation Bar
             Row(

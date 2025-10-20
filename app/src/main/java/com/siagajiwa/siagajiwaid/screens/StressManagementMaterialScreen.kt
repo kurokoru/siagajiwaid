@@ -49,7 +49,7 @@ fun StressManagementMaterialScreen(navController: NavHostController) {
             modifier = Modifier.fillMaxSize()
         ) {
             // Status Bar Spacer
-            Spacer(modifier = Modifier.height(44.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Navigation Bar
             StressNavigationBar(
@@ -96,33 +96,33 @@ private fun StressNavigationBar(
     title: String,
     onBackClick: () -> Unit
 ) {
-    Box(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(53.dp)
-            .background(White),
-        contentAlignment = Alignment.Center
+            .height(56.dp)
+            .padding(horizontal = 24.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // Back Button
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(start = 24.dp)
-                .clickable { onBackClick() }
+        IconButton(
+            onClick = { onBackClick() },
+            modifier = Modifier.size(24.dp)
         ) {
-            Text(
-                text = "←",
-                fontSize = 24.sp,
-                color = DarkLight
+            Icon(
+                painter = painterResource(id = R.drawable.arrow),
+                contentDescription = "Back",
+                tint = DarkLight,
+                modifier = Modifier.size(16.dp)
             )
         }
 
-        // Title
+        Spacer(modifier = Modifier.width(16.dp))
+
         Text(
             text = title,
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
-            color = DarkLight
+            color = DarkLight,
+            modifier = Modifier.weight(1f)
         )
     }
 }
