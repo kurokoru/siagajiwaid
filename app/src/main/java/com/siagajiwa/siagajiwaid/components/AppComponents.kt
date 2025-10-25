@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -113,10 +114,11 @@ fun MyTextField(labelVal: String, icon: Int) {
             textVal = it
         },
         modifier = Modifier.fillMaxWidth(),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
+        colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = BrandColor,
             unfocusedBorderColor = BorderColor,
-            textColor = Color.Black,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
             focusedLeadingIconColor = BrandColor,
             unfocusedLeadingIconColor = Tertirary
         ),
@@ -153,10 +155,11 @@ fun PasswordInputComponent(labelVal: String) {
             password = it
         },
         modifier = Modifier.fillMaxWidth().height(48.dp),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
+        colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = BrandColor,
             unfocusedBorderColor = BorderColor,
-            textColor = Color.Black
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black
         ),
         shape = MaterialTheme.shapes.large,
         placeholder = {

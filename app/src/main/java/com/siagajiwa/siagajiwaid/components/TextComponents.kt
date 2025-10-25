@@ -7,6 +7,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -49,10 +50,11 @@ fun InputText(labelVal: String, height: Dp = 58.dp) {
         label = {
             Text(text = labelVal, fontSize = 12.sp,  lineHeight = 24.sp )
         },
-        colors = TextFieldDefaults.outlinedTextFieldColors(
+        colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = BrandColor,
             unfocusedBorderColor = BorderColor,
-            textColor = Color.Black,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
             focusedLeadingIconColor = BrandColor,
             unfocusedLeadingIconColor = Tertirary
         ),

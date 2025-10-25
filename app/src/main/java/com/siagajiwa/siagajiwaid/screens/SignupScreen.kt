@@ -3,50 +3,65 @@ package com.siagajiwa.siagajiwaid.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-//import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-//import androidx.navigation.compose.rememberNavController
 import com.siagajiwa.siagajiwaid.R
-import com.siagajiwa.siagajiwaid.ui.theme.LeftStart
-import com.siagajiwa.siagajiwaid.ui.theme.PurpleDark
-import com.siagajiwa.siagajiwaid.ui.theme.White
+import com.siagajiwa.siagajiwaid.ui.theme.*
+import com.siagajiwa.siagajiwaid.viewmodel.UserViewModel
 
 @Composable
-fun RoundedLayoutSignup(navController: NavHostController){
+fun RoundedLayoutSignup(
+    navController: NavHostController,
+    userViewModel: UserViewModel = viewModel()
+) {
+    // State management
+    var fullName by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var isTermsAccepted by remember { mutableStateOf(false) }
+    var isPasswordVisible by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    val uiState by userViewModel.uiState.collectAsState()
+
+    // Form validation
+    val isFormValid = fullName.isNotBlank() &&
+                      email.isNotBlank() &&
+                      password.length >= 6 &&
+                      isTermsAccepted
+
+    // Clear error when user types
+    LaunchedEffect(fullName, email, password) {
+        errorMessage = null
+        userViewModel.clearError()
+    }
+
     Surface(
-        modifier = Modifier.fillMaxSize(),//.padding(top = 10.dp),
+        modifier = Modifier.fillMaxSize(),
         color = White,
         shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(LeftStart),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -66,40 +81,194 @@ fun RoundedLayoutSignup(navController: NavHostController){
             ImageCenter(image = R.drawable.signup)
             Spacer(modifier = Modifier.height(10.dp))
             Spacer(modifier = Modifier.height(20.dp))
+
             Column {
-                InputText(labelVal = "Nama")
+                // Full Name Input
+                OutlinedTextField(
+                    value = fullName,
+                    onValueChange = { fullName = it },
+                    label = { Text("Nama") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PurpleDark,
+                        unfocusedBorderColor = Color.Gray
+                    ),
+                    enabled = !uiState.isLoading
+                )
+
                 Spacer(modifier = Modifier.height(15.dp))
-                InputText(labelVal = "Email/No Handphone")
+
+                // Email Input
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PurpleDark,
+                        unfocusedBorderColor = Color.Gray
+                    ),
+                    enabled = !uiState.isLoading,
+                    isError = errorMessage?.contains("email", ignoreCase = true) == true
+                )
+
                 Spacer(modifier = Modifier.height(15.dp))
-                PasswordInputComponent(labelVal = "Password")
+
+                // Password Input
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PurpleDark,
+                        unfocusedBorderColor = Color.Gray
+                    ),
+                    enabled = !uiState.isLoading,
+                    supportingText = {
+                        if (password.isNotEmpty() && password.length < 6) {
+                            Text(
+                                text = "Password minimal 6 karakter",
+                                color = MaterialTheme.colorScheme.error,
+                                fontSize = 12.sp
+                            )
+                        }
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                            Text(
+                                text = if (isPasswordVisible) "👁" else "👁‍🗨",
+                                fontSize = 20.sp
+                            )
+                        }
+                    }
+                )
+
                 Spacer(modifier = Modifier.height(15.dp))
+
+                // Terms and conditions
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    var isChecked by remember { mutableStateOf(false) }
-
                     Checkbox(
-                        checked = isChecked,
-                        onCheckedChange = { isChecked = it }
+                        checked = isTermsAccepted,
+                        onCheckedChange = { isTermsAccepted = it },
+                        enabled = !uiState.isLoading
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "By creating an account your aggree\n" +
-                                "to our  Term and Condtions",
+                        text = "By creating an account you agree\n" +
+                                "to our Term and Conditions",
                         color = Color.Gray,
                         fontSize = 14.sp,
-                        modifier = Modifier.clickable { isChecked = !isChecked }
+                        modifier = Modifier.clickable {
+                            if (!uiState.isLoading) {
+                                isTermsAccepted = !isTermsAccepted
+                            }
+                        }
                     )
                 }
-                Box(
-                    modifier = Modifier.fillMaxSize(),
+
+                // Error message
+                if (errorMessage != null || uiState.error != null) {
+                    Text(
+                        text = errorMessage ?: uiState.error ?: "",
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Sign up button
+                Button(
+                    onClick = {
+                        if (isFormValid) {
+                            userViewModel.signUpWithEmail(
+                                email = email.trim(),
+                                password = password,
+                                fullName = fullName.trim(),
+                                onSuccess = {
+                                    navController.navigate("HomeScreen") {
+                                        popUpTo("LoginScreen") { inclusive = true }
+                                    }
+                                },
+                                onError = { error ->
+                                    errorMessage = error
+                                }
+                            )
+                        } else {
+                            when {
+                                fullName.isBlank() -> errorMessage = "Nama tidak boleh kosong"
+                                email.isBlank() -> errorMessage = "Email tidak boleh kosong"
+                                password.length < 6 -> errorMessage = "Password minimal 6 karakter"
+                                !isTermsAccepted -> errorMessage = "Anda harus menyetujui syarat dan ketentuan"
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    enabled = !uiState.isLoading,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = PurpleDark,
+                        disabledContainerColor = Color.Gray
+                    ),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
-                    Column {
-                        SignUpBottom(navController)
+                    if (uiState.isLoading) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = White,
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Mendaftar...", fontSize = 16.sp, color = White)
+                        }
+                    } else {
+                        Text("Sign Up", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Already have account
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Sudah punya akun? ",
+                        color = Color.Gray,
+                        fontSize = 14.sp
+                    )
+                    Text(
+                        text = "Login",
+                        color = PurpleDark,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.clickable {
+                            if (!uiState.isLoading) {
+                                navController.navigate("LoginScreen") {
+                                    popUpTo("SignupScreen") { inclusive = true }
+                                }
+                            }
+                        }
+                    )
                 }
             }
         }

@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.siagajiwa.siagajiwaid.R
 import com.siagajiwa.siagajiwaid.components.CustomBottomNavigation
@@ -33,11 +34,16 @@ import com.siagajiwa.siagajiwaid.ui.theme.SemanticRed
 import com.siagajiwa.siagajiwaid.ui.theme.SemanticYellow
 import com.siagajiwa.siagajiwaid.ui.theme.TextGray
 import com.siagajiwa.siagajiwaid.ui.theme.SecondaryPurple
+import com.siagajiwa.siagajiwaid.viewmodel.UserViewModel
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(
+    navController: NavHostController,
+    userViewModel: UserViewModel = viewModel()
+) {
     var selectedTab by remember { mutableIntStateOf(0) }
     var selectedBottomNavIndex by remember { mutableIntStateOf(0) }
+    val uiState by userViewModel.uiState.collectAsState()
 
     Box(
         modifier = Modifier
@@ -58,7 +64,7 @@ fun HomeScreen(navController: NavHostController) {
                     .padding(horizontal = 24.dp)
             ) {
                 Text(
-                    text = "Hi, Melissa Jenner",
+                    text = "Hi, ${uiState.user?.fullName ?: "User"}",
                     color = White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Medium
@@ -83,7 +89,8 @@ fun HomeScreen(navController: NavHostController) {
                         StressLevelCard(
                             selectedTab = selectedTab,
                             onTabSelected = { selectedTab = it },
-                            navController = navController
+                            navController = navController,
+                            user = uiState.user
                         )
                     }
 
@@ -161,7 +168,8 @@ fun HomeScreenPreview() {
 fun StressLevelCard(
     selectedTab: Int,
     onTabSelected: (Int) -> Unit,
-    navController: NavHostController
+    navController: NavHostController,
+    user: com.siagajiwa.siagajiwaid.data.models.User? = null
 ) {
     Card(
         modifier = Modifier
@@ -296,12 +304,17 @@ fun StressLevelCard(
                                 modifier = Modifier.weight(1f)
                             )
 
-                            // Right side - "Tinggi" status
+                            // Right side - Stress Level from API
                             Text(
-                                text = "Tinggi",
+                                text = user?.stressLevel ?: "Belum diukur",
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFE74C3C), // Red color for "Tinggi"
+                                color = when (user?.stressLevel?.lowercase()) {
+                                    "rendah" -> Color(0xFF4CAF50)
+                                    "sedang" -> SemanticYellow
+                                    "tinggi" -> SemanticRed
+                                    else -> TextGray
+                                },
                                 textAlign = TextAlign.End,
                                 modifier = Modifier.weight(1f)
                             )
@@ -380,13 +393,13 @@ fun StressLevelCard(
                                 )
                             }
 
-                            // Right side - Score and progress
+                            // Right side - Score and progress from API
                             Column(
                                 modifier = Modifier.weight(1f),
                                 horizontalAlignment = Alignment.End
                             ) {
                                 Text(
-                                    text = "75%",
+                                    text = "${user?.knowledgePercentage ?: 0}%",
                                     fontSize = 40.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = SecondaryPurple,
@@ -396,7 +409,11 @@ fun StressLevelCard(
                                 Spacer(modifier = Modifier.height(8.dp))
 
                                 Text(
-                                    text = "18 dari 24 soal dijawab dengan benar",
+                                    text = if (user?.knowledgeScore != null) {
+                                        "${user.knowledgeScore} dari 24 soal dijawab dengan benar"
+                                    } else {
+                                        "Belum mengikuti tes"
+                                    },
                                     fontSize = 12.sp,
                                     color = TextGray,
                                     textAlign = TextAlign.End,
