@@ -10,9 +10,6 @@ import com.siagajiwa.siagajiwaid.components.ForgotPasswordScreen
 import com.siagajiwa.siagajiwaid.components.LoginScreen
 import com.siagajiwa.siagajiwaid.components.ResetPasswordScreen
 import com.siagajiwa.siagajiwaid.components.SignupScreen
-import com.siagajiwa.siagajiwaid.screens.HomeScreen
-import com.siagajiwa.siagajiwaid.screens.QuestionnaireScreen
-import com.siagajiwa.siagajiwaid.screens.QuizScreen
 
 @Composable
 fun Navigation() {
@@ -63,11 +60,6 @@ fun Navigation() {
             ActivityHistoryScreen(navController)
         }
         composable(
-            route = "QuizResultScreen"
-        ) {
-            QuizResultScreen(navController)
-        }
-        composable(
             route = "StressTestResultScreen"
         ) {
             StressTestResultScreen(navController)
@@ -105,6 +97,26 @@ fun Navigation() {
                 navController = navController,
                 videoUrl = videoUrl,
                 videoTitle = videoTitle
+            )
+        }
+        composable(
+            route = "PatientKnowledgeQuizScreen"
+        ) {
+            PatientKnowledgeQuizScreen(navController)
+        }
+        composable(
+            route = "QuizResultScreen/{correctAnswers}/{totalQuestions}",
+            arguments = listOf(
+                navArgument("correctAnswers") { type = NavType.IntType },
+                navArgument("totalQuestions") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val correctAnswers = backStackEntry.arguments?.getInt("correctAnswers") ?: 0
+            val totalQuestions = backStackEntry.arguments?.getInt("totalQuestions") ?: 0
+            QuizResultScreen(
+                navController = navController,
+                correctAnswers = correctAnswers,
+                totalQuestions = totalQuestions
             )
         }
     }

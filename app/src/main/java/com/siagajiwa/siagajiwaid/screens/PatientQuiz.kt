@@ -7,11 +7,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -40,20 +38,15 @@ import com.siagajiwa.siagajiwaid.ui.theme.SecondaryPurple
 fun QuestionnaireScreen(navController: NavHostController) {
     var selectedTabIndex by remember { mutableIntStateOf(1) } // Search tab selected
     var selectedAnswers by remember { mutableStateOf(mapOf<Int, Int>()) }
-    var currentPageIndex by remember { mutableIntStateOf(0) }
-    
-    val pages = QuestionnaireData.pages
-    val currentPage = pages[currentPageIndex]
-    val totalPages = pages.size
-    val totalQuestions = pages.sumOf { it.questions.size }
+
+    // Flatten all questions from all pages into a single list
+    val allQuestions = QuestionnaireData.pages.flatMap { it.questions }
+    val totalQuestions = allQuestions.size
     val answeredQuestions = selectedAnswers.size
     val progress = answeredQuestions.toFloat() / totalQuestions
-    val isLastPage = currentPageIndex == totalPages - 1
 
-    // Check if all questions on current page are answered
-    val currentPageAnswered = currentPage.questions.all { question ->
-        selectedAnswers.containsKey(question.id)
-    }
+    // Check if all questions are answered
+    val allQuestionsAnswered = selectedAnswers.size == totalQuestions
 
     Box(
         modifier = Modifier
@@ -71,52 +64,60 @@ fun QuestionnaireScreen(navController: NavHostController) {
                 title = "Kuisioner untuk pengasuh",
                 onBackClick = { navController.popBackStack() }
             )
-            
-            // Content with page transition animation
-            AnimatedContent(
-                targetState = currentPageIndex,
-                transitionSpec = {
-                    fadeIn(animationSpec = tween(300)) +
-                            slideInHorizontally(
-                                animationSpec = tween(300),
-                                initialOffsetX = { if (targetState > initialState) 300 else -300 }
-                            ) togetherWith
-                            fadeOut(animationSpec = tween(300)) +
-                            slideOutHorizontally(
-                                animationSpec = tween(300),
-                                targetOffsetX = { if (targetState > initialState) -300 else 300 }
-                            )
-                },
-                label = "page_transition",
-                modifier = Modifier.weight(1f)
-            ) { pageIndex ->
-                val page = pages[pageIndex]
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 24.dp)
-                ) {
-                    Spacer(modifier = Modifier.height(24.dp))
 
-                    // Current Page Questions
-                    page.questions.forEachIndexed { index, question ->
-                        QuestionCard(
-                            questionNumber = question.id,
-                            questionText = question.text,
-                            selectedAnswer = selectedAnswers[question.id] ?: -1,
-                            onAnswerSelected = { answer ->
-                                selectedAnswers = selectedAnswers.toMutableMap().apply {
-                                    put(question.id, answer)
-                                }
+            // Scrollable content with all questions
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp)
+            ) {
+                items(allQuestions.size) { index ->
+                    val question = allQuestions[index]
+                    QuestionCard(
+                        questionNumber = question.id,
+                        questionText = question.text,
+                        selectedAnswer = selectedAnswers[question.id] ?: -1,
+                        onAnswerSelected = { answer ->
+                            selectedAnswers = selectedAnswers.toMutableMap().apply {
+                                put(question.id, answer)
                             }
-                        )
+                        }
+                    )
 
-                        if (index < page.questions.size - 1) {
-                            Spacer(modifier = Modifier.height(24.dp))
+                    if (index < allQuestions.size - 1) {
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
+                }
+
+                // Submit button - shown when all questions are answered
+                item {
+                    if (allQuestionsAnswered) {
+                        Spacer(modifier = Modifier.height(32.dp))
+                        Button(
+                            onClick = {
+                                // Navigate to Stress Test Result Screen
+                                navController.navigate("StressTestResultScreen")
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = SecondaryPurple
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "Submit Kuisioner",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = White
+                            )
                         }
                     }
+                }
 
+                item {
                     Spacer(modifier = Modifier.height(32.dp))
                 }
             }
@@ -125,7 +126,7 @@ fun QuestionnaireScreen(navController: NavHostController) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 8.dp)
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -155,142 +156,6 @@ fun QuestionnaireScreen(navController: NavHostController) {
                     color = SecondaryPurple,
                     trackColor = Color(0xFFE0E0E0),
                 )
-            }
-
-            // Page Indicators
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                repeat(totalPages) { index ->
-                    PageIndicatorDot(
-                        isActive = index == currentPageIndex,
-                        isCompleted = pages[index].questions.all { selectedAnswers.containsKey(it.id) },
-                        onClick = { currentPageIndex = index }
-                    )
-                    if (index < totalPages - 1) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-                }
-            }
-
-            // Navigation Controls
-            Column(
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
-            ) {
-                // Show Submit button when all questions are answered
-                if (answeredQuestions == totalQuestions) {
-                    Button(
-                        onClick = {
-                            // Navigate to Stress Test Result Screen
-                            navController.navigate("StressTestResultScreen")
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = SecondaryPurple
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = "Submit Kuisioner",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = White
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-
-                // Navigation arrows (always show unless on appropriate edge)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Previous Button
-                    Button(
-                        onClick = {
-                            if (currentPageIndex > 0) {
-                                currentPageIndex--
-                            }
-                        },
-                        enabled = currentPageIndex > 0,
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFF5F5F5),
-                            disabledContainerColor = Color(0xFFF5F5F5)
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow),
-                            contentDescription = "Previous",
-                            modifier = Modifier.size(20.dp),
-                            tint = if (currentPageIndex > 0) DarkLight else Color(0xFFCACACA)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Kembali",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = if (currentPageIndex > 0) DarkLight else Color(0xFFCACACA)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    // Page Counter
-                    Text(
-                        text = "${currentPageIndex + 1}/$totalPages",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = SecondaryPurple
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    // Next Button
-                    Button(
-                        onClick = {
-                            if (currentPageIndex < totalPages - 1) {
-                                currentPageIndex++
-                            }
-                        },
-                        enabled = currentPageIndex < totalPages - 1,
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (currentPageAnswered) SecondaryPurple else Color(0xFFF5F5F5),
-                            disabledContainerColor = Color(0xFFF5F5F5)
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = "Selanjutnya",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = if (currentPageAnswered) White else Color(0xFF979797)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow),
-                            contentDescription = "Next",
-                            modifier = Modifier.size(20.dp),
-                            tint = if (currentPageAnswered) White else Color(0xFF979797)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
             }
         }
         

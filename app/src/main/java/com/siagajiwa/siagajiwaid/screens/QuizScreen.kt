@@ -26,31 +26,104 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siagajiwa.siagajiwaid.R
 import com.siagajiwa.siagajiwaid.components.CustomBottomNavigation
-import com.siagajiwa.siagajiwaid.data.QuizData
+import com.siagajiwa.siagajiwaid.data.QuizQuestion
 import com.siagajiwa.siagajiwaid.ui.theme.DarkLight
 import com.siagajiwa.siagajiwaid.ui.theme.SecondaryPurple
 import com.siagajiwa.siagajiwaid.ui.theme.White
+import com.siagajiwa.siagajiwaid.viewmodel.StressQuizViewModel
+import com.siagajiwa.siagajiwaid.viewmodel.StressQuizUiState
 
 @Composable
-fun QuizScreen(navController: NavHostController) {
-    var selectedTabIndex by remember { mutableIntStateOf(1) } // Search tab selected
-    var selectedAnswers by remember { mutableStateOf(mapOf<Int, String>()) }
-    var currentPageIndex by remember { mutableIntStateOf(0) }
+fun QuizScreen(
+    navController: NavHostController,
+    viewModel: StressQuizViewModel = viewModel()
+) {
+    var selectedTabIndex by remember { mutableIntStateOf(1) }
+    val quizState by viewModel.quizState.collectAsState()
 
-    val pages = QuizData.pages
-    val currentPage = pages[currentPageIndex]
-    val totalPages = pages.size
-    val totalQuestions = pages.sumOf { it.questions.size }
+    // Load STRESS quiz when screen is first displayed
+    LaunchedEffect(Unit) {
+        viewModel.loadQuiz()
+    }
+
+    when (val state = quizState) {
+        is StressQuizUiState.Loading -> {
+            LoadingContent()
+        }
+        is StressQuizUiState.Success -> {
+            val questions = state.questions
+            QuizScreenContent(
+                navController = navController,
+                viewModel = viewModel,
+                questions = questions,
+                selectedTabIndex = selectedTabIndex,
+                onTabSelected = { selectedTabIndex = it }
+            )
+        }
+        is StressQuizUiState.Error -> {
+            ErrorContent(
+                message = state.message,
+                onRetry = { viewModel.retryLoading() }
+            )
+        }
+    }
+}
+
+@Composable
+private fun LoadingContent() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(White),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(color = SecondaryPurple)
+    }
+}
+
+@Composable
+private fun ErrorContent(
+    message: String,
+    onRetry: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(White),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(24.dp)
+        ) {
+            Text(text = "Error: $message", color = DarkLight)
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = onRetry) {
+                Text("Retry")
+            }
+        }
+    }
+}
+
+@Composable
+private fun QuizScreenContent(
+    navController: NavHostController,
+    viewModel: StressQuizViewModel,
+    questions: List<QuizQuestion>,
+    selectedTabIndex: Int,
+    onTabSelected: (Int) -> Unit
+) {
+    var selectedAnswers by remember { mutableStateOf(mapOf<Int, String>()) }
+
+    val totalQuestions = questions.size
     val answeredQuestions = selectedAnswers.size
     val progress = answeredQuestions.toFloat() / totalQuestions
-    val isLastPage = currentPageIndex == totalPages - 1
 
-    // Check if all questions on current page are answered
-    val currentPageAnswered = currentPage.questions.all { question ->
-        selectedAnswers.containsKey(question.id)
-    }
+    // Check if all questions are answered
+    val allQuestionsAnswered = selectedAnswers.size == totalQuestions
 
     Box(
         modifier = Modifier
@@ -64,56 +137,73 @@ fun QuizScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(20.dp))
 
             // Navigation Bar
-            QuizNavigationBar(
-                title = "Quiz Untuk Pengasuh",
+            StressQuizNavigationBar(
+                title = "Tes Tingkat Stres",
                 onBackClick = { navController.popBackStack() }
             )
 
-            // Content with page transition animation
-            AnimatedContent(
-                targetState = currentPageIndex,
-                transitionSpec = {
-                    fadeIn(animationSpec = tween(300)) +
-                            slideInHorizontally(
-                                animationSpec = tween(300),
-                                initialOffsetX = { if (targetState > initialState) 300 else -300 }
-                            ) togetherWith
-                            fadeOut(animationSpec = tween(300)) +
-                            slideOutHorizontally(
-                                animationSpec = tween(300),
-                                targetOffsetX = { if (targetState > initialState) -300 else 300 }
-                            )
-                },
-                label = "page_transition",
-                modifier = Modifier.weight(1f)
-            ) { pageIndex ->
-                val page = pages[pageIndex]
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp)
-                ) {
-                    items(page.questions.size) { index ->
-                        val question = page.questions[index]
-                        QuizQuestionCard(
-                            questionNumber = question.id,
-                            questionText = question.text,
-                            options = question.options,
-                            selectedAnswer = selectedAnswers[question.id],
-                            onAnswerSelected = { answer ->
-                                selectedAnswers = selectedAnswers.toMutableMap().apply {
-                                    put(question.id, answer)
-                                }
+            // Scrollable content with all questions
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp)
+            ) {
+                items(questions.size) { index ->
+                    val question = questions[index]
+                    StressQuestionCard(
+                        questionNumber = index + 1,
+                        questionText = question.text,
+                        selectedValue = selectedAnswers[question.id],
+                        onValueSelected = { value ->
+                            selectedAnswers = selectedAnswers.toMutableMap().apply {
+                                put(question.id, value)
                             }
-                        )
+                        }
+                    )
 
-                        if (index < page.questions.size - 1) {
-                            Spacer(modifier = Modifier.height(24.dp))
+                    if (index < questions.size - 1) {
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
+                }
+
+                // Submit button - shown when all questions are answered
+                item {
+                    if (allQuestionsAnswered) {
+                        Spacer(modifier = Modifier.height(32.dp))
+                        Button(
+                            onClick = {
+                                viewModel.submitStressQuiz(
+                                    answers = selectedAnswers,
+                                    questions = questions,
+                                    onSuccess = { score, maxScore ->
+                                        navController.navigate("QuizResultScreen/$score/$maxScore")
+                                    },
+                                    onError = { error ->
+                                        // Show error
+                                    }
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = SecondaryPurple
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "Submit Quiz",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = White
+                            )
                         }
                     }
+                }
 
-                    item {
-                        Spacer(modifier = Modifier.height(32.dp))
-                    }
+                item {
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
             }
 
@@ -121,7 +211,7 @@ fun QuizScreen(navController: NavHostController) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 8.dp)
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -152,148 +242,12 @@ fun QuizScreen(navController: NavHostController) {
                     trackColor = Color(0xFFE0E0E0),
                 )
             }
-
-            // Page Indicators
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                repeat(totalPages) { index ->
-                    PageIndicatorDot(
-                        isActive = index == currentPageIndex,
-                        isCompleted = pages[index].questions.all { selectedAnswers.containsKey(it.id) },
-                        onClick = { currentPageIndex = index }
-                    )
-                    if (index < totalPages - 1) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-                }
-            }
-
-            // Navigation Controls
-            Column(
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
-            ) {
-                // Show Submit button when all questions are answered
-                if (answeredQuestions == totalQuestions) {
-                    Button(
-                        onClick = {
-                            // Navigate to Quiz Result Screen
-                            navController.navigate("QuizResultScreen")
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = SecondaryPurple
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = "Submit Quiz",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = White
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-
-                // Navigation arrows (always show unless on appropriate edge)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Previous Button
-                    Button(
-                        onClick = {
-                            if (currentPageIndex > 0) {
-                                currentPageIndex--
-                            }
-                        },
-                        enabled = currentPageIndex > 0,
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFF5F5F5),
-                            disabledContainerColor = Color(0xFFF5F5F5)
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow),
-                            contentDescription = "Previous",
-                            modifier = Modifier.size(20.dp),
-                            tint = if (currentPageIndex > 0) DarkLight else Color(0xFFCACACA)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Kembali",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = if (currentPageIndex > 0) DarkLight else Color(0xFFCACACA)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    // Page Counter
-                    Text(
-                        text = "${currentPageIndex + 1}/$totalPages",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = SecondaryPurple
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    // Next Button
-                    Button(
-                        onClick = {
-                            if (currentPageIndex < totalPages - 1) {
-                                currentPageIndex++
-                            }
-                        },
-                        enabled = currentPageIndex < totalPages - 1,
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (currentPageAnswered) SecondaryPurple else Color(0xFFF5F5F5),
-                            disabledContainerColor = Color(0xFFF5F5F5)
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = "Selanjutnya",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = if (currentPageAnswered) White else Color(0xFF979797)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow),
-                            contentDescription = "Next",
-                            modifier = Modifier.size(20.dp),
-                            tint = if (currentPageAnswered) White else Color(0xFF979797)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-            }
         }
 
         // Bottom Navigation
         CustomBottomNavigation(
             selectedIndex = selectedTabIndex,
-            onItemSelected = { selectedTabIndex = it },
+            onItemSelected = onTabSelected,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
 
@@ -310,7 +264,7 @@ fun QuizScreen(navController: NavHostController) {
 }
 
 @Composable
-fun QuizNavigationBar(
+fun StressQuizNavigationBar(
     title: String,
     onBackClick: () -> Unit
 ) {
@@ -340,6 +294,159 @@ fun QuizNavigationBar(
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             color = DarkLight,
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+fun StressQuestionCard(
+    questionNumber: Int,
+    questionText: String,
+    selectedValue: String?,
+    onValueSelected: (String) -> Unit
+) {
+    // Stress assessment options with values 0-4
+    val stressOptions = listOf(
+        "0" to "Tidak Pernah",
+        "1" to "Hampir Tidak Pernah",
+        "2" to "Kadang-Kadang",
+        "3" to "Cukup Sering",
+        "4" to "Terlalu Sering"
+    )
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = White
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+            // Question text
+            Text(
+                text = "$questionNumber. $questionText",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = DarkLight,
+                lineHeight = 20.sp
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Stress rating options
+            stressOptions.forEach { (value, label) ->
+                StressOptionItem(
+                    value = value,
+                    label = label,
+                    isSelected = selectedValue == value,
+                    onClick = { onValueSelected(value) }
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun StressOptionItem(
+    value: String,
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(
+                if (isSelected) SecondaryPurple.copy(alpha = 0.1f)
+                else Color(0xFFF5F5F5)
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Radio button circle
+        Box(
+            modifier = Modifier
+                .size(20.dp)
+                .clip(CircleShape)
+                .background(
+                    if (isSelected) SecondaryPurple else Color.Transparent
+                )
+                .then(
+                    if (!isSelected) Modifier.then(
+                        Modifier.clip(CircleShape).background(Color.Transparent)
+                            .then(Modifier.clip(CircleShape))
+                    ) else Modifier
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            if (!isSelected) {
+                Box(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clip(CircleShape)
+                        .background(Color.Transparent)
+                        .then(
+                            Modifier
+                                .size(20.dp)
+                                .clip(CircleShape)
+                                .background(Color.Transparent)
+                        )
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape)
+                            .background(Color(0xFFE0E0E0))
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(2.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFFF5F5F5))
+                    )
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .clip(CircleShape)
+                        .background(White)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        // Value indicator
+        Text(
+            text = value,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = if (isSelected) SecondaryPurple else DarkLight,
+            modifier = Modifier.width(24.dp)
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        // Label text
+        Text(
+            text = label,
+            fontSize = 14.sp,
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+            color = if (isSelected) SecondaryPurple else DarkLight,
             modifier = Modifier.weight(1f)
         )
     }
@@ -540,37 +647,248 @@ fun PageIndicatorDot(
     )
 }
 
-// Preview for Page 1 - First page
-@Preview(showBackground = true, name = "Quiz - Page 1")
+// ========================================
+// Preview Functions for Stress Quiz
+// ========================================
+
+// Preview for Stress Question Card - No selection
+@Preview(showBackground = true, name = "Stress Question - Unselected")
 @Composable
-fun QuizScreenPage1Preview() {
+fun StressQuestionCardPreview() {
+    StressQuestionCard(
+        questionNumber = 1,
+        questionText = "Seberapa sering Anda merasa gugup dan stres?",
+        selectedValue = null,
+        onValueSelected = {}
+    )
+}
+
+// Preview for Stress Question Card - With selection
+@Preview(showBackground = true, name = "Stress Question - Selected (2)")
+@Composable
+fun StressQuestionCardSelectedPreview() {
+    StressQuestionCard(
+        questionNumber = 2,
+        questionText = "Seberapa sering Anda mendapati diri Anda tidak mampu menghentikan atau mengendalikan kekhawatiran?",
+        selectedValue = "2",
+        onValueSelected = {}
+    )
+}
+
+// Preview for Stress Question Card - High stress selected
+@Preview(showBackground = true, name = "Stress Question - High Stress (4)")
+@Composable
+fun StressQuestionCardHighStressPreview() {
+    StressQuestionCard(
+        questionNumber = 3,
+        questionText = "Seberapa sering Anda merasa kesulitan untuk rileks?",
+        selectedValue = "4",
+        onValueSelected = {}
+    )
+}
+
+// Preview for Stress Option Item - Not selected
+@Preview(showBackground = true, name = "Stress Option - Unselected")
+@Composable
+fun StressOptionItemPreview() {
+    StressOptionItem(
+        value = "2",
+        label = "Kadang-Kadang",
+        isSelected = false,
+        onClick = {}
+    )
+}
+
+// Preview for Stress Option Item - Selected
+@Preview(showBackground = true, name = "Stress Option - Selected")
+@Composable
+fun StressOptionItemSelectedPreview() {
+    StressOptionItem(
+        value = "3",
+        label = "Cukup Sering",
+        isSelected = true,
+        onClick = {}
+    )
+}
+
+// Preview for all stress options
+@Preview(showBackground = true, name = "All Stress Options")
+@Composable
+fun AllStressOptionsPreview() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = "Pilih tingkat stres Anda:",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = DarkLight
+        )
+
+        StressOptionItem(value = "0", label = "Tidak Pernah", isSelected = false, onClick = {})
+        StressOptionItem(value = "1", label = "Hampir Tidak Pernah", isSelected = false, onClick = {})
+        StressOptionItem(value = "2", label = "Kadang-Kadang", isSelected = true, onClick = {})
+        StressOptionItem(value = "3", label = "Cukup Sering", isSelected = false, onClick = {})
+        StressOptionItem(value = "4", label = "Terlalu Sering", isSelected = false, onClick = {})
+    }
+}
+
+// Preview for complete stress quiz screen
+@Preview(showBackground = true, name = "Stress Quiz Screen")
+@Composable
+fun StressQuizScreenPreview() {
     QuizScreen(navController = rememberNavController())
 }
 
-// Preview for Page 3 - Middle page
-@Preview(showBackground = true, name = "Quiz - Page 3 (Middle)")
+// Preview with mock data - showing actual stress questions
+@Preview(showBackground = true, name = "Stress Quiz - Mock Data", heightDp = 2000)
 @Composable
-fun QuizScreenPage3Preview() {
-    QuizScreen(navController = rememberNavController())
-}
+fun StressQuizMockDataPreview() {
+    val mockQuestions = listOf(
+        QuizQuestion(
+            id = 1,
+            text = "Dalam 1 bulan terakhir, seberapa sering Anda merasa bingung atau panik karena ada hal yang terjadi tiba-tiba saat merawat anggota keluarga yang gangguan jiwa?",
+            options = emptyList()
+        ),
+        QuizQuestion(
+            id = 2,
+            text = "Dalam 1 bulan terakhir, seberapa sering Anda merasa tidak bisa mengatur atau mengendalikan hal-hal penting saat merawat anggota keluarga yang mengalami gangguan jiwa?",
+            options = emptyList()
+        ),
+        QuizQuestion(
+            id = 3,
+            text = "Dalam 1 bulan terakhir, seberapa sering Anda merasa cemas, tegang, atau stres saat menghadapi kondisi anggota yang gangguan jiwa?",
+            options = emptyList()
+        ),
+        QuizQuestion(
+            id = 4,
+            text = "Dalam 1 bulan terakhir, seberapa sering Anda merasa percaya diri dan yakin bisa mengatasi masalah yang muncul saat merawat anggota keluarga yang gangguan jiwa?",
+            options = emptyList()
+        ),
+        QuizQuestion(
+            id = 5,
+            text = "Dalam 1 bulan terakhir, seberapa sering Anda merasa semua berjalan dengan baik dalam perawatan anggota keluarga yang gangguan jiwa?",
+            options = emptyList()
+        ),
+        QuizQuestion(
+            id = 6,
+            text = "Dalam 1 bulan terakhir, seberapa sering Anda merasa kewalahan karena terlalu banyak hal yang harus dilakukan dalam perawatan anggota keluarga yang gangguan jiwa?",
+            options = emptyList()
+        ),
+        QuizQuestion(
+            id = 7,
+            text = "Dalam 1 bulan terakhir, seberapa sering Anda merasa bisa mengendalikan situasi sulit atau menyakitkan yang berkaitan dengan anggota keluarga yang gangguan jiwa?",
+            options = emptyList()
+        ),
+        QuizQuestion(
+            id = 8,
+            text = "Dalam 1 bulan terakhir, seberapa sering Anda merasa bahagia dan puas dengan usaha Anda dalam merawat anggota keluarga yang gangguan jiwa?",
+            options = emptyList()
+        ),
+        QuizQuestion(
+            id = 9,
+            text = "Dalam 1 bulan terakhir, seberapa sering Anda merasa kesal atau marah karena ada hal di luar kendali Anda yang memengaruhi perawatan anggota keluarga yang gangguan jiwa?",
+            options = emptyList()
+        ),
+        QuizQuestion(
+            id = 10,
+            text = "Dalam 1 bulan terakhir, seberapa sering Anda merasa merawat anggota keluarga yang mengalami gangguan jiwa terlalu banyak beban sehingga Anda kewalahan?",
+            options = emptyList()
+        )
+    )
 
-// Preview for Page 5 - Last page with Submit button
-@Preview(showBackground = true, name = "Quiz - Page 5 (Submit)")
-@Composable
-fun QuizScreenPage5Preview() {
-    QuizScreen(navController = rememberNavController())
-}
+    var selectedAnswers by remember { mutableStateOf(mapOf<Int, String>(
+        1 to "2",  // Question 1 - Kadang-Kadang
+        3 to "3",  // Question 3 - Cukup Sering
+        6 to "4"   // Question 6 - Terlalu Sering
+    )) }
 
-// Preview with progress - some questions answered
-@Preview(showBackground = true, name = "Quiz - With Progress")
-@Composable
-fun QuizScreenProgressPreview() {
-    QuizScreen(navController = rememberNavController())
-}
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(White)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Status Bar Spacer
+            Spacer(modifier = Modifier.height(20.dp))
 
-// Preview with all questions answered - Submit enabled
-@Preview(showBackground = true, name = "Quiz - All Answered")
-@Composable
-fun QuizScreenAllAnsweredPreview() {
-    QuizScreen(navController = rememberNavController())
+            // Navigation Bar
+            StressQuizNavigationBar(
+                title = "Tes Tingkat Stres",
+                onBackClick = { }
+            )
+
+            // Scrollable content with all questions
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp)
+            ) {
+                items(mockQuestions.size) { index ->
+                    val question = mockQuestions[index]
+                    StressQuestionCard(
+                        questionNumber = index + 1,
+                        questionText = question.text,
+                        selectedValue = selectedAnswers[question.id],
+                        onValueSelected = { value ->
+                            selectedAnswers = selectedAnswers.toMutableMap().apply {
+                                put(question.id, value)
+                            }
+                        }
+                    )
+
+                    if (index < mockQuestions.size - 1) {
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+            }
+
+            // Progress Bar
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Progress",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = DarkLight
+                    )
+                    Text(
+                        text = "${selectedAnswers.size}/10 pertanyaan",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color(0xFF979797)
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                LinearProgressIndicator(
+                    progress = selectedAnswers.size.toFloat() / 10f,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    color = SecondaryPurple,
+                    trackColor = Color(0xFFE0E0E0),
+                )
+            }
+        }
+    }
 }

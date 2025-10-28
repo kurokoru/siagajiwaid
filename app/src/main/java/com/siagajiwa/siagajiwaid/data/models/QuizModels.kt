@@ -5,34 +5,40 @@ import kotlinx.serialization.Serializable
 
 /**
  * Model for Stress Quiz (stress_quiz table)
- * Multiple choice questions with 2 options
+ * Multiple choice questions with 4 options (each up to 10 words)
+ * Answer options are stored as pipe-separated string: "option1|option2|option3|option4"
+ * Correct answer is the index (0-3) of the correct option
  */
 @Serializable
 data class StressQuizQuestion(
     @SerialName("id")
-    val id: String,
+    val id: Int,
 
     @SerialName("created_at")
-    val createdAt: String,
+    val createdAt: String? = null,
 
     @SerialName("question_number")
-    val questionNumber: Int,
+    val questionNumber: Int? = null,
 
     @SerialName("question_text")
-    val questionText: String,
+    val questionText: String? = null,
 
-    @SerialName("option1")
-    val option1: String,
+    @SerialName("answer_option")
+    val answerOption: String? = null, // Format: "option1|option2|option3|option4"
 
-    @SerialName("option2")
-    val option2: String,
-
-    @SerialName("page_number")
-    val pageNumber: Int,
+    @SerialName("correct_answer")
+    val correctAnswer: Int? = null, // Index of correct answer (0-3)
 
     @SerialName("order")
-    val order: Int
-)
+    val order: Int? = null
+) {
+    /**
+     * Parse the pipe-separated answer options into a list
+     */
+    fun getAnswerOptions(): List<String> {
+        return answerOption?.split("|")?.map { it.trim() } ?: emptyList()
+    }
+}
 
 /**
  * Model for Patient Care Quiz (perawatan_quiz table)
@@ -41,20 +47,23 @@ data class StressQuizQuestion(
 @Serializable
 data class PatientQuizQuestion(
     @SerialName("id")
-    val id: String,
+    val id: Int,
 
     @SerialName("created_at")
-    val createdAt: String,
+    val createdAt: String? = null,
 
     @SerialName("question_number")
-    val questionNumber: Int,
+    val questionNumber: Int? = null,
 
     @SerialName("question_text")
-    val questionText: String,
+    val questionText: String? = null,
 
-    @SerialName("page_number")
-    val pageNumber: Int,
+    @SerialName("answer_option")
+    val answerOption: String? = null,
+
+    @SerialName("correct_answer")
+    val correctAnswer: Int? = null,
 
     @SerialName("order")
-    val order: Int
+    val order: Int? = null
 )

@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-10-14T02:17:15.765183Z">
+        <DropdownSelection timestamp="2025-10-28T08:58:40.063074Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=/Users/hafidhidayatullah/.android/avd/Medium_Phone.avd" />
@@ -28,6 +28,12 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="SignUpScreenPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testStressQuizIntegration()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testAllRepositoriesComprehensive()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

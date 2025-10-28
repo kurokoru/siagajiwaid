@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class MediaContent(
     @SerialName("id")
-    val id: String,
+    val id: Int,
 
     @SerialName("created_at")
     val createdAt: String,

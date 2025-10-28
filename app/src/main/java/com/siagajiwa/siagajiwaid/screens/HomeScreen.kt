@@ -348,7 +348,7 @@ fun StressLevelCard(
                                         interactionSource = remember { MutableInteractionSource() },
                                 indication = rememberRipple(bounded = true)
                             ) {
-                                navController.navigate("PatientQuiz")
+                                navController.navigate("QuizScreen")
                             }
                             )
                         }
@@ -450,7 +450,7 @@ fun StressLevelCard(
                                         interactionSource = remember { MutableInteractionSource() },
                                 indication = rememberRipple(bounded = true)
                             ) {
-                                navController.navigate("QuizScreen")
+                                navController.navigate("PatientKnowledgeQuizScreen")
                             }
                             )
                         }
