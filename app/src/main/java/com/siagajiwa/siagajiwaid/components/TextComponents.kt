@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,7 +49,7 @@ fun InputText(labelVal: String, height: Dp = 58.dp) {
             .fillMaxWidth()
             .height(height),
         label = {
-            Text(text = labelVal, fontSize = 12.sp,  lineHeight = 24.sp )
+            Text(text = labelVal, fontSize = 9.sp,  lineHeight = 24.sp )
         },
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = BrandColor,
@@ -60,12 +61,20 @@ fun InputText(labelVal: String, height: Dp = 58.dp) {
         ),
         shape = MaterialTheme.shapes.large,
         placeholder = {
-            Text(text = labelVal, color = Tertirary, fontSize = 12.sp)
+            Text(text = labelVal, color = Tertirary, fontSize = 12.sp,  lineHeight = 24.sp)
         },
+        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp),
         keyboardOptions = KeyboardOptions(
             keyboardType = typeOfKeyboard,
             imeAction = ImeAction.Done
         ),
         singleLine = true
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun InputTextPreview() {
+    InputText(labelVal = "email ID", height = 48.dp)
 }

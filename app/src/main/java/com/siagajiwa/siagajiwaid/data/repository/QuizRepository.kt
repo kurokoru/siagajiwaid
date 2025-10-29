@@ -126,4 +126,49 @@ class QuizRepository {
             }
         }
     }
+
+    /**
+     * Get the latest stress result for a user from stress_results table
+     */
+    suspend fun getLatestStressResult(userId: String): Result<com.siagajiwa.siagajiwaid.data.models.StressData?> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val stressResults = database.from("stress_results")
+                    .select() {
+                        filter {
+                            eq("user_id", userId)
+                        }
+                        order(column = "test_date", order = Order.DESCENDING)
+                        limit(count = 1)
+                    }
+                    .decodeList<com.siagajiwa.siagajiwaid.data.models.StressData>()
+
+                Result.success(stressResults.firstOrNull())
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    /**
+     * Get all stress results for a user from stress_results table
+     */
+    suspend fun getAllStressResults(userId: String): Result<List<com.siagajiwa.siagajiwaid.data.models.StressData>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val stressResults = database.from("stress_results")
+                    .select() {
+                        filter {
+                            eq("user_id", userId)
+                        }
+                        order(column = "test_date", order = Order.DESCENDING)
+                    }
+                    .decodeList<com.siagajiwa.siagajiwaid.data.models.StressData>()
+
+                Result.success(stressResults)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
 }

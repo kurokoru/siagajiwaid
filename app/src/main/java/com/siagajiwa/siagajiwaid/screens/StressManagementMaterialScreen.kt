@@ -10,6 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -24,6 +27,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.siagajiwa.siagajiwaid.R
+import com.siagajiwa.siagajiwaid.components.CustomBottomNavigation
 import com.siagajiwa.siagajiwaid.ui.theme.DarkLight
 import com.siagajiwa.siagajiwaid.ui.theme.Primary
 import com.siagajiwa.siagajiwaid.ui.theme.White
@@ -37,6 +41,7 @@ fun StressManagementMaterialScreen(
     viewModel: MediaViewModel = viewModel()
 ) {
     val mediaState by viewModel.stressMediaState.collectAsState()
+    var selectedBottomNavIndex by remember { mutableIntStateOf(0) }
 
     // Load media when screen is first displayed
     LaunchedEffect(Unit) {
@@ -71,6 +76,7 @@ fun StressManagementMaterialScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 48.dp),
+                        contentPadding = PaddingValues(bottom = 100.dp), // Space for bottom navigation
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
@@ -107,6 +113,14 @@ fun StressManagementMaterialScreen(
                 }
             }
         }
+
+        // Bottom Navigation
+        CustomBottomNavigation(
+            selectedIndex = selectedBottomNavIndex,
+            onItemSelected = { selectedBottomNavIndex = it },
+            modifier = Modifier.align(Alignment.BottomCenter),
+            navController = navController
+        )
     }
 }
 

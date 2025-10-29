@@ -3,8 +3,10 @@ package com.siagajiwa.siagajiwaid.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.siagajiwa.siagajiwaid.data.QuizQuestion
+import com.siagajiwa.siagajiwaid.data.models.StressData
 import com.siagajiwa.siagajiwaid.data.models.StressQuizQuestion
 import com.siagajiwa.siagajiwaid.data.repository.QuizRepository
+import com.siagajiwa.siagajiwaid.data.repository.UserRepository
 import com.siagajiwa.siagajiwaid.data.SupabaseClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +28,7 @@ sealed class StressQuizUiState {
  */
 class StressQuizViewModel : ViewModel() {
     private val repository = QuizRepository()
+    private val userRepository = UserRepository()
 
     private val _quizState = MutableStateFlow<StressQuizUiState>(StressQuizUiState.Loading)
     val quizState: StateFlow<StressQuizUiState> = _quizState.asStateFlow()
@@ -73,8 +76,8 @@ class StressQuizViewModel : ViewModel() {
     }
 
     /**
-     * Submit stress quiz results
-     * Calculates total stress score (sum of all ratings)
+     * Submit stress quiz results to stress_results table
+     * Calculates total stress score and determines stress level
      */
     fun submitStressQuiz(
         answers: Map<Int, String>,
@@ -98,20 +101,25 @@ class StressQuizViewModel : ViewModel() {
 
                 val totalQuestions = questions.size
                 val maxPossibleScore = totalQuestions * 4 // Max score if all answers are 4
-                val percentage = if (maxPossibleScore > 0) {
-                    (totalScore * 100) / maxPossibleScore
-                } else 0
 
-                // Create stress quiz data
-                val stressData = com.siagajiwa.siagajiwaid.data.models.QuizData(
+                // Determine stress level based on score
+                // Assuming 10 questions with max score of 40
+                // Low: 0-13, Medium: 14-26, High: 27-40
+                val stressLevel = when {
+                    totalScore <= 13 -> "Rendah"
+                    totalScore <= 26 -> "Sedang"
+                    else -> "Tinggi"
+                }
+
+                // Create stress test data for stress_results table
+                val stressData = StressData(
                     userId = userId,
-                    quizScore = totalScore,
-                    totalQuestions = totalQuestions,
-                    percentage = percentage
+                    stressLevel = stressLevel,
+                    stressScore = totalScore
                 )
 
-                // Submit to repository
-                val result = repository.submitQuizResult(stressData)
+                // Submit to stress_results table via UserRepository
+                val result = userRepository.saveStressTest(stressData)
 
                 result.fold(
                     onSuccess = {

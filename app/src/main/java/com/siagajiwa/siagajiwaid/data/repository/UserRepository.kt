@@ -109,6 +109,7 @@ class UserRepository {
     suspend fun getUserProfile(userId: String): Result<User> {
         return withContext(Dispatchers.IO) {
             try {
+                println("📊 [UserRepository] Querying users table for user_id: $userId")
                 val user = database.from("users")
                     .select() {
                         filter {
@@ -117,8 +118,11 @@ class UserRepository {
                     }
                     .decodeSingle<User>()
 
+                println("✅ [UserRepository] User profile found: ${user.email}")
                 Result.success(user)
             } catch (e: Exception) {
+                println("❌ [UserRepository] Failed to get user profile: ${e.message}")
+                println("   This likely means the user exists in auth.users but not in public.users table")
                 Result.failure(e)
             }
         }
@@ -151,20 +155,8 @@ class UserRepository {
     suspend fun saveStressTest(stressData: StressData): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                database.from("stress_tests").insert(stressData)
-
-                // Update user's stress level
-                database.from("users")
-                    .update(
-                        mapOf(
-                            "stress_level" to stressData.stressLevel,
-                            "stress_score" to stressData.stressScore
-                        )
-                    ) {
-                        filter {
-                            eq("id", stressData.userId)
-                        }
-                    }
+                // Save to stress_results table
+                database.from("stress_results").insert(stressData)
 
                 Result.success(Unit)
             } catch (e: Exception) {

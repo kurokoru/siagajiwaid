@@ -43,7 +43,7 @@ class RepositoryIntegrationTest {
                     println("━".repeat(60))
                     println("Database ID: ${question.id}")
                     println("Question Number: ${question.questionNumber}")
-                    println("Page: ${question.pageNumber}")
+                    // Page field removed from model
                     println("Order: ${question.order}")
                     println("\nQ: ${question.questionText}")
                     println("\nAnswer Options:")
@@ -61,12 +61,7 @@ class RepositoryIntegrationTest {
                 println("SUMMARY")
                 println("━".repeat(60))
                 println("Total Questions: ${questions.size}")
-                val pages = questions.mapNotNull { it.pageNumber }.distinct().sorted()
-                println("Pages: $pages (${pages.size} pages)")
-                println("Questions per page:")
-                questions.groupBy { it.pageNumber }.forEach { (page, qs) ->
-                    println("  Page $page: ${qs.size} questions")
-                }
+                // Page grouping removed - pagination removed from quiz
                 println("=".repeat(60) + "\n")
             },
             onFailure = { error ->
@@ -98,7 +93,7 @@ class RepositoryIntegrationTest {
                     println("━".repeat(60))
                     println("Database ID: ${question.id}")
                     println("Question Number: ${question.questionNumber}")
-                    println("Page: ${question.pageNumber}")
+                    // Page field removed from model
                     println("Order: ${question.order}")
                     println("\nQ: ${question.questionText}")
                     println("(Rating scale: 0-4)")
@@ -109,12 +104,7 @@ class RepositoryIntegrationTest {
                 println("SUMMARY")
                 println("━".repeat(60))
                 println("Total Questions: ${questions.size}")
-                val pages = questions.mapNotNull { it.pageNumber }.distinct().sorted()
-                println("Pages: $pages (${pages.size} pages)")
-                println("Questions per page:")
-                questions.groupBy { it.pageNumber }.forEach { (page, qs) ->
-                    println("  Page $page: ${qs.size} questions")
-                }
+                // Page grouping removed - pagination removed from quiz
                 println("=".repeat(60) + "\n")
             },
             onFailure = { error ->

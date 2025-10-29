@@ -165,6 +165,7 @@ fun PasswordInputComponent(labelVal: String) {
         placeholder = {
             Text(text = labelVal, color = Tertirary, fontSize = 12.sp)
         },
+        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp),
         trailingIcon = {
             val description = if (isShowPassword) "Show Password" else "Hide Password"
             val iconImage =

@@ -35,6 +35,7 @@ import com.siagajiwa.siagajiwaid.ui.theme.SemanticYellow
 import com.siagajiwa.siagajiwaid.ui.theme.TextGray
 import com.siagajiwa.siagajiwaid.ui.theme.SecondaryPurple
 import com.siagajiwa.siagajiwaid.viewmodel.UserViewModel
+import com.siagajiwa.siagajiwaid.viewmodel.UserUiState
 
 @Composable
 fun HomeScreen(
@@ -90,7 +91,7 @@ fun HomeScreen(
                             selectedTab = selectedTab,
                             onTabSelected = { selectedTab = it },
                             navController = navController,
-                            user = uiState.user
+                            uiState = uiState
                         )
                     }
 
@@ -161,7 +162,7 @@ fun HomeScreenPreview() {
     // For the purpose of this preview, we can pass null if the composable handles it gracefully,
     // or create a simple NavController instance if needed (e.g., using rememberNavController()).
     // However, since the navController is not used in the HomeScreen's logic, passing a dummy is fine.
-//    HomeScreen(navController = NavHostController(androidx.compose.ui.platform.LocalContext.current))
+    HomeScreen(navController = NavHostController(androidx.compose.ui.platform.LocalContext.current))
 }
 
 @Composable
@@ -169,8 +170,9 @@ fun StressLevelCard(
     selectedTab: Int,
     onTabSelected: (Int) -> Unit,
     navController: NavHostController,
-    user: com.siagajiwa.siagajiwaid.data.models.User? = null
+    uiState: UserUiState
 ) {
+    val user = uiState.user
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -304,12 +306,12 @@ fun StressLevelCard(
                                 modifier = Modifier.weight(1f)
                             )
 
-                            // Right side - Stress Level from API
+                            // Right side - Stress Level from latest stress_result
                             Text(
-                                text = user?.stressLevel ?: "Belum diukur",
+                                text = uiState.latestStressResult?.stressLevel ?: "Belum diukur",
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = when (user?.stressLevel?.lowercase()) {
+                                color = when (uiState.latestStressResult?.stressLevel?.lowercase()) {
                                     "rendah" -> Color(0xFF4CAF50)
                                     "sedang" -> SemanticYellow
                                     "tinggi" -> SemanticRed
@@ -385,21 +387,29 @@ fun StressLevelCard(
 
                                 Spacer(modifier = Modifier.height(16.dp))
 
+                                // Calculate knowledge level from latest quiz result
+                                val knowledgeLevel = when {
+                                    uiState.latestQuizResult == null -> "Belum diukur"
+                                    uiState.latestQuizResult.percentage >= 75 -> "Baik"
+                                    uiState.latestQuizResult.percentage >= 50 -> "Cukup"
+                                    else -> "Kurang"
+                                }
+
                                 Text(
-                                    text = "Cukup",
+                                    text = knowledgeLevel,
                                     fontSize = 32.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = SecondaryPurple
                                 )
                             }
 
-                            // Right side - Score and progress from API
+                            // Right side - Score and progress from latest quiz result
                             Column(
                                 modifier = Modifier.weight(1f),
                                 horizontalAlignment = Alignment.End
                             ) {
                                 Text(
-                                    text = "${user?.knowledgePercentage ?: 0}%",
+                                    text = "${uiState.latestQuizResult?.percentage ?: 0}%",
                                     fontSize = 40.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = SecondaryPurple,
@@ -409,8 +419,8 @@ fun StressLevelCard(
                                 Spacer(modifier = Modifier.height(8.dp))
 
                                 Text(
-                                    text = if (user?.knowledgeScore != null) {
-                                        "${user.knowledgeScore} dari 24 soal dijawab dengan benar"
+                                    text = if (uiState.latestQuizResult != null) {
+                                        "${uiState.latestQuizResult.quizScore} dari ${uiState.latestQuizResult.totalQuestions} soal dijawab dengan benar"
                                     } else {
                                         "Belum mengikuti tes"
                                     },
