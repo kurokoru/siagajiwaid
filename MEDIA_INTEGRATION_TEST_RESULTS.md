@@ -120,14 +120,14 @@ The integration test has been successfully created at:
 
 ```bash
 ./gradlew :app:connectedDebugAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.class=com.siagajiwa.siagajiwaid.integration.MediaIntegrationTest#testGetPatientCareMediaWithAuthentication
+  -Pandroid.testInstrumentationRunnerArguments.class=siagajiwantegration.MediaIntegrationTest#testGetPatientCareMediaWithAuthentication
 ```
 
 ### Run All Media Tests
 
 ```bash
 ./gradlew :app:connectedDebugAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.class=com.siagajiwa.siagajiwaid.integration.MediaIntegrationTest
+  -Pandroid.testInstrumentationRunnerArguments.class=siagajiwantegration.MediaIntegrationTest
 ```
 
 ### View Results

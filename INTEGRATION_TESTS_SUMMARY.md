@@ -57,7 +57,7 @@ This will:
 ./gradlew :app:connectedAndroidTest
 
 # Run specific test class
-./gradlew :app:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.siagajiwa.siagajiwaid.integration.RepositoryIntegrationTest
+./gradlew :app:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=siagajiwantegration.RepositoryIntegrationTest
 ```
 
 ### Option 3: Using Android Studio

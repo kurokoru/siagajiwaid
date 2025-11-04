@@ -99,7 +99,7 @@ adb devices
 ./gradlew :app:connectedAndroidTest
 
 # Run specific test
-./gradlew :app:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.siagajiwa.siagajiwaid.integration.RepositoryIntegrationTest#testStressQuizIntegration
+./gradlew :app:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=siagajiwantegration.RepositoryIntegrationTest#testStressQuizIntegration
 ```
 
 ### Method 3: Using Android Studio
@@ -124,8 +124,8 @@ adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
 # Run tests via adb
 adb shell am instrument -w -r \
   -e debug false \
-  -e class com.siagajiwa.siagajiwaid.integration.RepositoryIntegrationTest \
-  com.siagajiwa.siagajiwaid.test/androidx.test.runner.AndroidJUnitRunner
+  -e class siagajiwantegration.RepositoryIntegrationTest \
+  siagajiwaest/androidx.test.runner.AndroidJUnitRunner
 ```
 
 ## Viewing Test Output

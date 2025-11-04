@@ -80,51 +80,51 @@
 > Task :app:connectedDebugAndroidTest
 Starting 46 tests on SM-A525F - 14
 
-com.siagajiwa.siagajiwaid.integration.AuthFlowIntegrationTest > testLoginAndFetchUserProfile[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.AuthFlowIntegrationTest > testLoginAndFetchUserProfile[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Login should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.AuthFlowIntegrationTest > testSessionValidityAfterLogin[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.AuthFlowIntegrationTest > testSessionValidityAfterLogin[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Login should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.AuthFlowIntegrationTest > testCompleteLoginLogoutCycle[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.AuthFlowIntegrationTest > testCompleteLoginLogoutCycle[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Login should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.AuthFlowIntegrationTest > testUserProfileNotFoundForInvalidUserId[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.AuthFlowIntegrationTest > testUserProfileNotFoundForInvalidUserId[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Login should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.AuthFlowIntegrationTest > testMultipleLoginAttempts[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.AuthFlowIntegrationTest > testMultipleLoginAttempts[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Login should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.AuthFlowIntegrationTest > testCompleteLoginFlow[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.AuthFlowIntegrationTest > testCompleteLoginFlow[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Login should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.AuthFlowIntegrationTest > testConsecutiveLogins[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.AuthFlowIntegrationTest > testConsecutiveLogins[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Login should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.LoginIntegrationTest > testSessionPersistenceAfterLogin[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.LoginIntegrationTest > testSessionPersistenceAfterLogin[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Session should persist after login
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.LoginIntegrationTest > testSuccessfulLogin[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.LoginIntegrationTest > testSuccessfulLogin[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Login should succeed with valid credentials
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.LoginIntegrationTest > testMultipleSuccessfulLogins[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.LoginIntegrationTest > testMultipleSuccessfulLogins[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: First login should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.LoginIntegrationTest > testSuccessfulLoginAndLogout[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.LoginIntegrationTest > testSuccessfulLoginAndLogout[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Login should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.LoginIntegrationTest > testLoginStateAfterSuccessfulLogin[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.LoginIntegrationTest > testLoginStateAfterSuccessfulLogin[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Login should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 
@@ -132,27 +132,27 @@ SM-A525F - 14 Tests 25/46 completed. (0 skipped) (12 failed)
 
 > Task :app:connectedDebugAndroidTest
 
-com.siagajiwa.siagajiwaid.integration.UserViewModelIntegrationTest > testSignInLoadsStressResult[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.UserViewModelIntegrationTest > testSignInLoadsStressResult[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Sign in should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.UserViewModelIntegrationTest > testRefreshQuizData[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.UserViewModelIntegrationTest > testRefreshQuizData[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Sign in should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.UserViewModelIntegrationTest > testRefreshStressData[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.UserViewModelIntegrationTest > testRefreshStressData[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Sign in should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.UserViewModelIntegrationTest > testSignInLoadsQuizResult[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.UserViewModelIntegrationTest > testSignInLoadsQuizResult[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Sign in should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.UserViewModelIntegrationTest > testUserStateStructure[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.UserViewModelIntegrationTest > testUserStateStructure[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Sign in should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 
-com.siagajiwa.siagajiwaid.integration.UserViewModelIntegrationTest > testCheckAuthStatusLoadsQuizResult[SM-A525F - 14] [31mFAILED [0m
+siagajiwa.integration.UserViewModelIntegrationTest > testCheckAuthStatusLoadsQuizResult[SM-A525F - 14] [31mFAILED [0m
 	java.lang.AssertionError: Sign in should succeed
 	at org.junit.Assert.fail(Assert.java:89)
 Tests on SM-A525F - 14 failed: There was 18 failure(s).
